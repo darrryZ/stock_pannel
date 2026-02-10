@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>黄金外汇看板 - XAUUSD Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .price-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .price-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .symbol {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .last-update {
+            font-size: 0.9em;
+            color: #999;
+        }
+
+        .price-display {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .current-price {
+            font-size: 4em;
+            font-weight: bold;
+            color: #2ecc71;
+            margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .price-change {
+            font-size: 1.2em;
+            color: #27ae60;
+        }
+
+        .price-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .detail-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .detail-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .news-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .news-header {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .news-list {
+            display: grid;
+            gap: 20px;
+        }
+
+        .news-item {
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .news-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .news-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .news-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .news-source {
+            font-weight: 500;
+            color: #667eea;
+        }
+
+        .news-time {
+            color: #999;
+        }
+
+        .news-description {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #2ecc71;
+            margin-right: 8px;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .price-card {
+                padding: 20px;
+            }
+
+            .current-price {
+                font-size: 2.5em;
+            }
+
+            .news-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏆 黄金外汇看板</h1>
+            <p>XAUUSD Gold Forex Dashboard - Real-time Updates Every 3 Seconds</p>
+        </div>
+
+        <div class="price-card">
+            <div class="price-header">
+                <div class="symbol">
+                    <span class="status-indicator"></span>
+                    <span id="symbol">XAUUSD</span>
+                </div>
+                <div class="last-update" id="lastUpdate">更新中...</div>
+            </div>
+
+            <div class="price-display">
+                <div class="current-price" id="currentPrice">
+                    <span class="pulse">---.--</span>
+                </div>
+                <div class="price-change" id="priceChange">USD / oz</div>
+            </div>
+
+            <div class="price-details">
+                <div class="detail-item">
+                    <div class="detail-label">买入价 (Bid)</div>
+                    <div class="detail-value" id="bidPrice">---.--</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">卖出价 (Ask)</div>
+                    <div class="detail-value" id="askPrice">---.--</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">价差 (Spread)</div>
+                    <div class="detail-value" id="spread">---.--</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="news-section">
+            <h2 class="news-header">📰 全球黄金资讯 Global Gold News</h2>
+            <div class="news-list" id="newsList">
+                <div class="loading pulse">加载资讯中...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let previousPrice = null;
+
+        // Format time
+        function formatTime(isoString) {
+            const date = new Date(isoString);
+            const now = new Date();
+            const diff = now - date;
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(minutes / 60);
+            
+            if (minutes < 1) return '刚刚';
+            if (minutes < 60) return `${minutes}分钟前`;
+            if (hours < 24) return `${hours}小时前`;
+            return date.toLocaleDateString('zh-CN');
+        }
+
+        // Update price display
+        function updatePrice(data) {
+            if (!data || !data.price) return;
+
+            const priceElement = document.getElementById('currentPrice');
+            const currentPrice = parseFloat(data.price);
+            
+            // Update main price
+            priceElement.textContent = `$${data.price}`;
+            
+            // Change color based on price movement
+            if (previousPrice !== null) {
+                if (currentPrice > previousPrice) {
+                    priceElement.style.color = '#2ecc71';
+                    priceElement.classList.add('pulse');
+                } else if (currentPrice < previousPrice) {
+                    priceElement.style.color = '#e74c3c';
+                    priceElement.classList.add('pulse');
+                } else {
+                    priceElement.style.color = '#3498db';
+                }
+                setTimeout(() => priceElement.classList.remove('pulse'), 500);
+            }
+            
+            previousPrice = currentPrice;
+
+            // Update bid/ask/spread
+            document.getElementById('bidPrice').textContent = `$${data.bid}`;
+            document.getElementById('askPrice').textContent = `$${data.ask}`;
+            
+            const spread = (parseFloat(data.ask) - parseFloat(data.bid)).toFixed(2);
+            document.getElementById('spread').textContent = `$${spread}`;
+
+            // Update timestamp
+            const updateTime = new Date(data.timestamp);
+            document.getElementById('lastUpdate').textContent = 
+                `最后更新: ${updateTime.toLocaleTimeString('zh-CN')}`;
+        }
+
+        // Update news display
+        function updateNews(news) {
+            if (!news || news.length === 0) return;
+
+            const newsList = document.getElementById('newsList');
+            newsList.innerHTML = news.map(item => `
+                <div class="news-item">
+                    <div class="news-title">${item.title}</div>
+                    <div class="news-meta">
+                        <span class="news-source">📍 ${item.source}</span>
+                        <span class="news-time">🕐 ${formatTime(item.publishedAt)}</span>
+                    </div>
+                    <div class="news-description">${item.description}</div>
+                </div>
+            `).join('');
+        }
+
+        // Fetch data from server
+        async function fetchData() {
+            try {
+                const response = await fetch('/api/data');
+                const data = await response.json();
+                
+                if (data.price) {
+                    updatePrice(data.price);
+                }
+                
+                if (data.news) {
+                    updateNews(data.news);
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        // Initial fetch
+        fetchData();
+
+        // Fetch data every 3 seconds
+        setInterval(fetchData, 3000);
+    </script>
+</body>
+</html>

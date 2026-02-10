@@ -8,8 +8,14 @@ const PORT = process.env.PORT || 3000;
 // API Configuration
 // For production, set these as environment variables
 const METALS_API_KEY = process.env.METALS_API_KEY || 'goldapi-demo-key'; // Free demo key
+const METALS_DEMO_KEY = process.env.METALS_DEMO_KEY || 'demo'; // Metals-API demo key
 const NEWS_API_KEY = process.env.NEWS_API_KEY || ''; // Optional: Get from newsapi.org
 const GNEWS_API_KEY = process.env.GNEWS_API_KEY || ''; // Optional: Get from gnews.io
+const NEWSDATA_API_KEY = process.env.NEWSDATA_API_KEY || 'pub_622478a5c8f5bef4a0e5c8e3a0e5c8e3a0e5c'; // NewsData demo key
+
+// Time constants for better readability
+const MINUTE_MS = 60 * 1000;
+const HOUR_MS = 60 * MINUTE_MS;
 
 // Serve static files
 app.use(express.static('public'));
@@ -50,7 +56,7 @@ async function fetchGoldPrice() {
     try {
         const response = await axios.get('https://metals-api.com/api/latest', {
             params: {
-                access_key: 'demo', // Use environment variable in production
+                access_key: METALS_DEMO_KEY,
                 base: 'USD',
                 symbols: 'XAU'
             },
@@ -188,7 +194,7 @@ async function fetchGoldNews() {
         // Using a public financial news aggregator
         const response = await axios.get('https://newsdata.io/api/1/news', {
             params: {
-                apikey: 'pub_622478a5c8f5bef4a0e5c8e3a0e5c8e3a0e5c', // Demo key
+                apikey: NEWSDATA_API_KEY,
                 q: 'gold',
                 language: 'en',
                 category: 'business'
@@ -215,35 +221,35 @@ async function fetchGoldNews() {
         {
             title: 'Gold Prices Surge Amid Global Economic Uncertainty',
             source: 'Financial Times',
-            publishedAt: new Date(Date.now() - 1000 * 60 * 25).toISOString(),
+            publishedAt: new Date(Date.now() - MINUTE_MS * 25).toISOString(),
             url: 'https://www.ft.com',
             description: 'Gold prices continue to climb as investors seek safe-haven assets amid economic uncertainty.'
         },
         {
             title: 'Central Banks Continue Record Gold Buying Spree',
             source: 'Bloomberg',
-            publishedAt: new Date(Date.now() - 1000 * 60 * 90).toISOString(),
+            publishedAt: new Date(Date.now() - MINUTE_MS * 90).toISOString(),
             url: 'https://www.bloomberg.com',
             description: 'Global central banks are adding to their gold reserves at the fastest pace in decades.'
         },
         {
             title: 'XAUUSD Technical Analysis: Key Levels to Watch',
             source: 'Reuters',
-            publishedAt: new Date(Date.now() - 1000 * 60 * 180).toISOString(),
+            publishedAt: new Date(Date.now() - HOUR_MS * 3).toISOString(),
             url: 'https://www.reuters.com',
             description: 'Technical analysts identify crucial support and resistance levels for gold trading pairs.'
         },
         {
             title: 'Gold Mining Stocks Rally on Price Momentum',
             source: 'CNBC',
-            publishedAt: new Date(Date.now() - 1000 * 60 * 300).toISOString(),
+            publishedAt: new Date(Date.now() - HOUR_MS * 5).toISOString(),
             url: 'https://www.cnbc.com',
             description: 'Gold mining companies see stock prices rise following the precious metal\'s recent rally.'
         },
         {
             title: 'Federal Reserve Policy Impact on Gold Markets',
             source: 'Wall Street Journal',
-            publishedAt: new Date(Date.now() - 1000 * 60 * 480).toISOString(),
+            publishedAt: new Date(Date.now() - HOUR_MS * 8).toISOString(),
             url: 'https://www.wsj.com',
             description: 'Federal Reserve policy decisions continue to have significant influence on gold price movements.'
         }

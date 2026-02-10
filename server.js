@@ -1,5 +1,4 @@
 const express = require('express');
-const axios = require('axios');
 const path = require('path');
 
 const app = express();
@@ -24,7 +23,7 @@ async function fetchGoldPrice() {
         
         // Simulating gold price around $2000-2100 with small fluctuations
         const basePrice = 2050;
-        const variation = (Math.random() - 0.5) * 10; // ±5 variation
+        const variation = (Math.random() - 0.5) * 10; // ±5 variation (range: -5 to +5)
         const currentPrice = (basePrice + variation).toFixed(2);
         
         return {
